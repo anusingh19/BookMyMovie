@@ -5,11 +5,10 @@ import {
   Tabs,
   TextField,
   Typography,
-  FormControl,
 } from "@material-ui/core";
 import Logo from "../../assets/logo.svg";
-import { Link } from "react-router-dom";
 import Modal from "react-modal";
+import { Link } from "react-router-dom";
 import TabPanel from "../tabPanel/TabPanel";
 import "./Header.css";
 
