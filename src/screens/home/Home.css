@@ -12,6 +12,15 @@
 }
 
 .cardComponent {
-  min-width: 240px;
-  /* max-width: 240px; */
+  flex-wrap: wrap;
+  flex: 0 1 24%;
+  margin: 16px;
+  padding-top: 15px;
+}
+
+.fCard {
+  flex-wrap: wrap;
+  flex: 0 1 24%;
+  margin: 16px;
+  padding-top: 15px;
 }
