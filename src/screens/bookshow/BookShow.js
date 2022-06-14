@@ -33,35 +33,29 @@ const BookShow = (props) => {
   const [originalShows, setOriginalShows] = useState([]);
   const [showId, setShowId] = useState("");
 
-  useEffect(() => {
-    let dataShows = null;
+  useEffect(async () => {
+    try {
+      let response = await fetch(props.baseUrl + "movies/" + props.match.params.id + "/shows");
+      let result = await response.json();
+      setOriginalShows(result.shows);
+      let newLocations = [];
 
-    fetch(props.baseUrl + "movies/" + props.match.params.id + "/shows", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-      },
-      body: dataShows,
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        setOriginalShows(response.shows);
+      for (let show of result.shows) {
+        newLocations.push({
+          id: show.theatre.city,
+          location: show.theatre.city,
+        });
+      }
 
-        let newLocations = [];
-
-        for (let show of response.shows) {
-          newLocations.push({
-            id: show.theatre.city,
-            location: show.theatre.city,
-          });
-        }
-
-        newLocations = newLocations.filter(
-          (loc, index, self) => index === self.findIndex((c) => c.id === loc.id)
-        );
-        setLocations(newLocations);
-      });
+      newLocations = newLocations.filter(
+        (loc, index, self) => index === self.findIndex((c) => c.id === loc.id)
+      );
+      setLocations(newLocations);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.clear();
+      }
+    }
   }, []);
 
   const locationChangeHandler = (event) => {

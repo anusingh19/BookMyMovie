@@ -80,6 +80,9 @@ const Header = ({ bookShow, bookShowId }) => {
   };
 
   const handleChange = (prop) => (event) => {
+
+    console.log(prop);
+    console.log(event.target.value);
     setValues({
       ...values,
       registered: false,
@@ -93,38 +96,38 @@ const Header = ({ bookShow, bookShowId }) => {
   };
 
   const handleLoginSubmit = (event) => {
-    const tryLogin = async () => {
-      try {
-        let myHeaders = new Headers();
+    setLoginOpen(false);
+    setLoggedIn(true);
+    // const tryLogin = async () => {
+    //   try {
+    //     let myHeaders = new Headers();
 
-        myHeaders.append("access-control-allow-origin", "*");
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Cache-Control", "no-cache");
-        myHeaders.append(
-          "Authorization",
-          "Basic " +
-          window.btoa(loginValues.username + ":" + loginValues.password)
-        );
+    //     myHeaders.append("access-control-allow-origin", "*");
+    //     myHeaders.append("Content-Type", "application/json");
+    //     myHeaders.append("Cache-Control", "no-cache");
+    //     myHeaders.append(
+    //       "Authorization",
+    //       "Basic " +
+    //       window.btoa(loginValues.username + ":" + loginValues.password)
+    //     );
 
-        let response = await fetch(
-          'http://localhost:8085/api/v1/auth/login',
-          {
-            method: "POST",
-            headers: myHeaders,
-          }
-        );
-        if (response.ok && loggedIn !== true) {
-          setLoginOpen(false);
-          setLoggedIn(true);
-        }
-      } catch (e) { console.log(e) }
-    };
-    tryLogin();
+    //     let response = await fetch(
+    //       'http://localhost:8085/api/v1/auth/login',
+    //       {
+    //         method: "POST",
+    //         headers: myHeaders,
+    //       }
+    //     );
+    //     if (response.ok && loggedIn !== true) {
+    //       setLoginOpen(false);
+    //       setLoggedIn(true);
+    //     }
+    //   } catch (e) { console.log(e) }
+    // };
+    // tryLogin();
   };
 
   const handleSubmit = (event) => {
-    console.log(event);
-
     const tryRegister = async () => {
       setValues({
         ...values,
@@ -156,7 +159,7 @@ const Header = ({ bookShow, bookShowId }) => {
             ...values,
             registered: true,
           });
-          setLoginOpen(false);
+          // setLoginOpen(false);
         }
       } catch (e) { }
     };
@@ -173,7 +176,7 @@ const Header = ({ bookShow, bookShowId }) => {
           {bookShow ?
             loggedIn ? (
               <Link
-                to={"/bookshow" + bookShowId}
+                to={"/bookshow/" + bookShowId}
                 style={{ textDecoration: "none" }}
               >
                 <Button variant="contained" name="Book Show" color="primary">
@@ -287,6 +290,7 @@ const Header = ({ bookShow, bookShowId }) => {
               <InputLabel htmlFor="lastName">Last Name *</InputLabel>
               <Input
                 id="lastName"
+                required
                 value={values.lastName}
                 onChange={handleChange("lastName")}
               />
@@ -309,6 +313,7 @@ const Header = ({ bookShow, bookShowId }) => {
               <InputLabel htmlFor="password">Password *</InputLabel>
               <Input
                 id="password"
+                required
                 value={values.password}
                 type="password"
                 onChange={handleChange("password")}

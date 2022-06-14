@@ -1,5 +1,4 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import axios from 'axios';
 import Header from '../../common/header/Header';
 import Heading from '../../common/heading/Heading';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,7 +17,6 @@ import {
   Input,
   Checkbox,
   Button,
-  createTheme,
   ListItemText,
   Typography,
 } from '@material-ui/core';
@@ -83,7 +81,11 @@ const Home = () => {
               element.first_name + " " + element.last_name
           )
         );
-      } catch (_) { }
+      } catch (error) { 
+        if (error.response && error.response.status === 404) {
+          console.clear();
+        }
+      }
     };
     getMovies();
   }, []);

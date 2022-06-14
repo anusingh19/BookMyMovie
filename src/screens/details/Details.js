@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../common/header/Header";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
 import moment from 'moment';
 import { Typography } from "@material-ui/core";
 import YouTube from "react-youtube";
@@ -21,19 +20,23 @@ const Details = () => {
   let [rating, setRating] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8085/api/v1/movies/${id}`)
-      .then((response) => {
-        setMovieData(response.data);
-        setArtists(response.data.artists);
-        setYouttubeUrl(response.data.trailer_url);
-        setGenres(response.data.genres);
-      })
-      .catch((error) => {
+    const getDetails = async () => {
+      try {
+        let response = await fetch(
+          `http://localhost:8085/api/v1/movies/${id}`
+        );
+        let result = await response.json();
+        setMovieData(result);
+        setArtists(result.artists);
+        setYouttubeUrl(result.trailer_url);
+        setGenres(result.genres);
+      } catch (error) { 
         if (error.response && error.response.status === 404) {
           console.clear();
         }
-      });
+      }
+    };
+    getDetails();
   }, []);
 
   const onClick = (value) => (event) => {
