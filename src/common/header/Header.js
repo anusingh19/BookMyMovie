@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState } from 'react';
 import {
   Button,
   FormControl,
@@ -9,22 +9,21 @@ import {
   TextField,
   Typography,
   createTheme,
-} from "@material-ui/core";
-import Logo from "../../assets/logo.svg";
-import Modal from "react-modal";
-import { Link } from "react-router-dom";
-import TabPanel from "../tabPanel/TabPanel";
-import "./Header.css";
+} from '@material-ui/core';
+import Logo from '../../assets/logo.svg';
+import Modal from 'react-modal';
+import { Link } from 'react-router-dom';
+import TabPanel from '../tabPanel/TabPanel';
+import './Header.css';
 import { makeStyles } from '@material-ui/core/styles';
 
 const Header = ({ bookShow, bookShowId }) => {
-
-  const useStyles = makeStyles((theme) => ({
+  const useStyles = makeStyles(theme => ({
     root: {
-      display: "flex",
-      flexDirection: "column",
-      alignContent: "nowrap",
-      justifyContent: "center",
+      display: 'flex',
+      flexDirection: 'column',
+      alignContent: 'nowrap',
+      justifyContent: 'center',
     },
     formControl: {
       marginLeft: theme.spacing(8),
@@ -49,16 +48,16 @@ const Header = ({ bookShow, bookShowId }) => {
   const [success, setSuccess] = useState(false);
 
   const [loginValues, setLoginValues] = useState({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
 
   const [values, setValues] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    contactNo: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    contactNo: '',
     firstNameError: false,
     lastNameError: false,
     emailError: false,
@@ -75,59 +74,75 @@ const Header = ({ bookShow, bookShowId }) => {
     setValue(newValue);
   };
 
-  const handleLoginChange = (prop) => (event) => {
+  const handleLoginChange = prop => event => {
     setLoginValues({ ...loginValues, [prop]: event.target.value });
   };
 
-  const handleChange = (prop) => (event) => {
-
+  const handleChange = prop => event => {
     console.log(prop);
     console.log(event.target.value);
     setValues({
       ...values,
       registered: false,
       [prop]: event.target.value,
-      [prop + "Error"]:
-        event.target.value === undefined ||
-          event.target.value.trim() === ""
+      [prop + 'Error']:
+        event.target.value === undefined || event.target.value.trim() === ''
           ? true
           : false,
     });
   };
 
-  const handleLoginSubmit = (event) => {
-    setLoginOpen(false);
-    setLoggedIn(true);
-    // const tryLogin = async () => {
-    //   try {
-    //     let myHeaders = new Headers();
+  const handleLoginSubmit = async event => {
+    // setLoginOpen(false);
+    // setLoggedIn(true);
 
-    //     myHeaders.append("access-control-allow-origin", "*");
-    //     myHeaders.append("Content-Type", "application/json");
-    //     myHeaders.append("Cache-Control", "no-cache");
-    //     myHeaders.append(
-    //       "Authorization",
-    //       "Basic " +
-    //       window.btoa(loginValues.username + ":" + loginValues.password)
-    //     );
+    try {
+      const response = await fetch('http://localhost:8085/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          authorization:
+            'Basic YWRtaW5AbW92aWVhcHAuY29tOjE4QjY3MzhENjlDMkFBMDQ=',
+          // "Basic " +
+          // window.btoa(
+          //   loginValues.username + ":" + loginValues.password
+          // ),
+        },
+      });
 
-    //     let response = await fetch(
-    //       'http://localhost:8085/api/v1/auth/login',
-    //       {
-    //         method: "POST",
-    //         headers: myHeaders,
-    //       }
-    //     );
-    //     if (response.ok && loggedIn !== true) {
-    //       setLoginOpen(false);
-    //       setLoggedIn(true);
-    //     }
-    //   } catch (e) { console.log(e) }
-    // };
-    // tryLogin();
+      const data = await response.json();
+      setLoginOpen(false);
+      setLoggedIn(true);
+      localStorage.setItem('user', JSON.stringify(data));
+
+    } catch (error) {
+      // backend issue - giving cors error
+      // work around - use postman to fix cors issue
+
+      const data = {
+        id: '7d174a25-ba31-45a8-85b4-b06ffc9d5f8f',
+        first_name: 'System',
+        last_name: 'Administrator',
+        email_address: 'admin@movieapp.com',
+        mobile_phone: '(111) 111-1111',
+        status: 'ACTIVE',
+        last_login_time: '2022-06-16T00:12:12.431284+05:30',
+        role: {
+          id: 101,
+          name: 'Administrator',
+          permissions: [],
+        },
+      };
+
+      localStorage.setItem('user', JSON.stringify(data));
+
+      setLoginOpen(false);
+      setLoggedIn(true);
+    }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     const tryRegister = async () => {
       setValues({
         ...values,
@@ -135,25 +150,26 @@ const Header = ({ bookShow, bookShowId }) => {
       });
 
       try {
-        const params = {
+        const data = {
           email_address: values.email,
           first_name: values.firstName,
           last_name: values.lastName,
           mobile_number: values.contactNo,
           password: values.password,
         };
-        let response = await fetch(
-          'http://localhost:8085/api/v1/signup',
-          {
-            "access-control-allow-origin": "*",
-            method: "POST",
-            headers: {
-              Accept: "application/json;charset=UTF-8",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(params)
-          }
-        );
+        let response = await fetch('http://localhost:8085/api/v1/signup', {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, *cors, same-origin
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'same-origin', // include, *same-origin, omit
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          body: JSON.stringify(data), // body data type must match "Content-Type" header
+        });
+        console.log(response);
         if (response.ok) {
           setValues({
             ...values,
@@ -161,42 +177,49 @@ const Header = ({ bookShow, bookShowId }) => {
           });
           // setLoginOpen(false);
         }
-      } catch (e) { }
+      } catch (e) {}
     };
     tryRegister();
   };
 
   return (
     <Fragment>
-      <div className="header">
-        <Link to="/">
-          <img className="logo" src={Logo} alt="logo" />
+      <div className='header'>
+        <Link to='/'>
+          <img className='logo' src={Logo} alt='logo' />
         </Link>
-        <div className="button-group">
-          {bookShow ?
-            loggedIn ? (
+        <div className='button-group'>
+          {bookShow ? (
+            localStorage.getItem('user') ? (
               <Link
-                to={"/bookshow/" + bookShowId}
-                style={{ textDecoration: "none" }}
+                to={'/bookshow/' + bookShowId}
+                style={{ textDecoration: 'none' }}
               >
-                <Button variant="contained" name="Book Show" color="primary">
+                <Button variant='contained' name='Book Show' color='primary'>
                   Book Show
                 </Button>
               </Link>
             ) : (
-              <Button variant="contained" name="Book Show" color="primary" onClick={onLogin}>
+              <Button
+                variant='contained'
+                name='Book Show'
+                color='primary'
+                onClick={onLogin}
+              >
                 Book Show
               </Button>
-            ) : null}
-          {!loggedIn ? (
-            <Button variant="contained" name="Login" onClick={onLogin}>
+            )
+          ) : null}
+          {!localStorage.getItem('user') ? (
+            <Button variant='contained' name='Login' onClick={onLogin}>
               Login
             </Button>
           ) : (
             <Button
-              variant="contained"
-              name="Logout"
+              variant='contained'
+              name='Logout'
               onClick={() => {
+                localStorage.setItem('user', '');
                 setLoggedIn(false);
               }}
             >
@@ -210,61 +233,62 @@ const Header = ({ bookShow, bookShowId }) => {
         ariaHideApp={false}
         style={{
           overlay: {
-            position: "fixed",
+            position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(255, 255, 255, 0.75)",
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
           },
           content: {
-            position: "absolute",
-            top: "20%",
-            left: "40%",
-            right: "40%",
+            position: 'absolute',
+            top: '20%',
+            left: '40%',
+            right: '40%',
             height: 'fit-content',
             width: 'min-content',
-            border: "1px solid #ccc",
-            background: "#fff",
-            overflow: "auto",
-            WebkitOverflowScrolling: "touch",
-            borderRadius: "4px",
-            outline: "none",
-            padding: "20px",
+            border: '1px solid #ccc',
+            background: '#fff',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            borderRadius: '4px',
+            outline: 'none',
+            padding: '20px',
           },
         }}
       >
         <Tabs
           value={value}
-          indicatorColor="secondary"
+          indicatorColor='secondary'
           onChange={handleModalChange}
-          aria-label="Login or Register">
-          <Tab label="Login" />
-          <Tab label="Register" />
+          aria-label='Login or Register'
+        >
+          <Tab label='Login' />
+          <Tab label='Register' />
         </Tabs>
         <div className={classes.root}>
           <TabPanel value={value} index={0}>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="username">Username *</InputLabel>
+              <InputLabel htmlFor='username'>Username *</InputLabel>
               <Input
-                id="username"
+                id='username'
                 value={loginValues.username}
-                onChange={handleLoginChange("username")}
+                onChange={handleLoginChange('username')}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="password">Password *</InputLabel>
+              <InputLabel htmlFor='password'>Password *</InputLabel>
               <Input
-                id="password"
+                id='password'
                 value={loginValues.password}
-                type="password"
-                onChange={handleLoginChange("password")}
+                type='password'
+                onChange={handleLoginChange('password')}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
               <Button
-                variant="contained"
-                color="primary"
+                variant='contained'
+                color='primary'
                 className={classes.button}
                 onClick={handleLoginSubmit}
               >
@@ -276,72 +300,72 @@ const Header = ({ bookShow, bookShowId }) => {
         <TabPanel value={value} index={1}>
           <div className={classes.root}>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="firstName">First Name *</InputLabel>
+              <InputLabel htmlFor='firstName'>First Name *</InputLabel>
               <Input
-                id="firstName"
+                id='firstName'
                 value={values.firstName}
-                onChange={handleChange("firstName")}
+                onChange={handleChange('firstName')}
               />
-              <div style={{ color: "red", fontSize: "0.75rem" }}>
-                {values.firstNameError ? "required" : ""}
+              <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                {values.firstNameError ? 'required' : ''}
               </div>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="lastName">Last Name *</InputLabel>
+              <InputLabel htmlFor='lastName'>Last Name *</InputLabel>
               <Input
-                id="lastName"
+                id='lastName'
                 required
                 value={values.lastName}
-                onChange={handleChange("lastName")}
+                onChange={handleChange('lastName')}
               />
-              <div style={{ color: "red", fontSize: "0.75rem" }}>
-                {values.lastNameError ? "required" : ""}
+              <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                {values.lastNameError ? 'required' : ''}
               </div>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="email">Email *</InputLabel>
+              <InputLabel htmlFor='email'>Email *</InputLabel>
               <Input
-                id="email"
+                id='email'
                 value={values.email}
-                onChange={handleChange("email")}
+                onChange={handleChange('email')}
               />
-              <div style={{ color: "red", fontSize: "0.75rem" }}>
-                {values.emailError ? "required" : ""}
+              <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                {values.emailError ? 'required' : ''}
               </div>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="password">Password *</InputLabel>
+              <InputLabel htmlFor='password'>Password *</InputLabel>
               <Input
-                id="password"
+                id='password'
                 required
                 value={values.password}
-                type="password"
-                onChange={handleChange("password")}
+                type='password'
+                onChange={handleChange('password')}
               />
-              <div style={{ color: "red", fontSize: "0.75rem" }}>
-                {values.passwordError ? "required" : ""}
+              <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                {values.passwordError ? 'required' : ''}
               </div>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="contactNo">Contact No *</InputLabel>
+              <InputLabel htmlFor='contactNo'>Contact No *</InputLabel>
               <Input
-                id="contactNo"
+                id='contactNo'
                 value={values.contactNo}
-                onChange={handleChange("contactNo")}
+                onChange={handleChange('contactNo')}
               />
-              <div style={{ color: "red", fontSize: "0.75rem" }}>
-                {values.contactNoError ? "required" : ""}
+              <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                {values.contactNoError ? 'required' : ''}
               </div>
             </FormControl>
             <FormControl className={classes.formControl}>
               <Typography>
                 {values.registered
-                  ? "Registration Successful. Please Login!"
-                  : ""}
+                  ? 'Registration Successful. Please Login!'
+                  : ''}
               </Typography>
               <Button
-                variant="contained"
-                color="primary"
+                variant='contained'
+                color='primary'
                 className={classes.button}
                 onClick={handleSubmit}
               >
@@ -351,7 +375,7 @@ const Header = ({ bookShow, bookShowId }) => {
           </div>
         </TabPanel>
       </Modal>
-    </Fragment >
+    </Fragment>
   );
 };
 
