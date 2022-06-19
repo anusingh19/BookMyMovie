@@ -11,8 +11,9 @@ import ImageListItemBar from "@material-ui/core/ImageListItemBar";
 import "./Details.css";
 import { Fragment } from "react";
 
-const Details = () => {
+const Details = (props) => {
   let { id } = useParams();
+
   let [movieData, setMovieData] = useState("");
   let [genres, setGenres] = useState([]);
   let [youtubeUrl, setYouttubeUrl] = useState("");
@@ -23,14 +24,14 @@ const Details = () => {
     const getDetails = async () => {
       try {
         let response = await fetch(
-          `http://localhost:8085/api/v1/movies/${id}`
+          props.baseUrl + "movies/" + id
         );
         let result = await response.json();
         setMovieData(result);
         setArtists(result.artists);
         setYouttubeUrl(result.trailer_url);
         setGenres(result.genres);
-      } catch (error) { 
+      } catch (error) {
         if (error.response && error.response.status === 404) {
           console.clear();
         }

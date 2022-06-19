@@ -14,7 +14,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <div className="form-content">
-          <p>{children}</p>
+          {children}
         </div>
       )}
     </div>
